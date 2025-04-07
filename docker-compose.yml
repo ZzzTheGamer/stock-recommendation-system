@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  # 前端Next.js应用
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - BACKEND_URL=http://backend:5000
+    depends_on:
+      - backend
+
+  # 后端Flask应用
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py 

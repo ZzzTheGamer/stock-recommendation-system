@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+/.pnp
+.pnp.js
+/venv/
+backend/venv/
+**/venv/
+**/__pycache__/
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+/dist
+
+# Misc
+.DS_Store
+*.pem
+.idea/
+.vscode/
+*.pyc
+__pycache__/
+*.log
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/backend/.env
+
+# Vercel
+.vercel
+
+# Package files
+package-lock.json
+
+# Temp files
+/temp/
+*.tmp
+
+# Docker
+*.env
+.docker/ 
