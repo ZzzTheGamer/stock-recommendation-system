@@ -278,21 +278,21 @@ For tree models, the straightforward computation of Shapley values is computatio
 - **Dynamic Programming:**
    The algorithm accumulates contributions along the decision paths without enumerating all possible subsets. For a single tree, the model output is represented as:
   
-  $$
-  f(x) = \phi_0 + \sum_{i=1}^{M} \phi_i
-  $$
+$$
+f(x) = \phi_0 + \sum_{i=1}^{M} \phi_i
+$$
 
   where ϕ0 is the baseline and ϕi are the individual feature contributions. For an ensemble of trees (e.g., XGBoost):
   
-  $$
-  f(x) = \sum_{t=1}^{T} \left( \phi_{0,t} + \sum_{i=1}^{M} \phi_{i,t} \right)
-  $$
+$$
+f(x) = \sum_{t=1}^{T} \left( \phi_{0,t} + \sum_{i=1}^{M} \phi_{i,t} \right)
+$$
 
   The final Shapley value for feature i is obtained by summing its contributions across all trees:
   
-  $$
-  \phi_i = \sum_{t=1}^{T} \phi_{i,t}
-  $$
+$$
+\phi_i = \sum_{t=1}^{T} \phi_{i,t}
+$$
 
 This method reduces the computational complexity significantly to O(TLD^2) (with T trees, L leaves per tree, and maximum depth D).
 
@@ -331,18 +331,18 @@ To avoid erroneous splitting of numerical values (e.g., “12.5%”), a regular 
 - **Cosine Similarity:**
   The pairwise cosine similarity between sentence vectors vi and vj is computed using the formula:
   
-  $$
-  \text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j) = \frac{\mathbf{v}_i \cdot \mathbf{v}_j}{\|\mathbf{v}_i\| \, \|\mathbf{v}_j\|}
-  $$
+$$
+\text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j) = \frac{\mathbf{v}_i \cdot \mathbf{v}_j}{\|\mathbf{v}_i\| \, \|\mathbf{v}_j\|}
+$$
 
   To ensure non-negative values, any negative similarity scores are clamped to zero.
 
 - **Centrality Score:**
    The semantic centrality Ci of each sentence i is defined as the average cosine similarity of that sentence with all other sentences:
   
-  $$
-  C_i = \frac{1}{N} \sum_{j=1}^{N} \max(0, \text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j))
-  $$
+$$
+C_i = \frac{1}{N} \sum_{j=1}^{N} \max(0, \text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j))
+$$
 
   where N is the total number of sentences. A higher centrality score indicates that the sentence is more representative of the overall semantic content of the document.
 
