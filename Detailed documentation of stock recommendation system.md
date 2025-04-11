@@ -128,23 +128,31 @@ In this section, we explain how the self-attention mechanism is utilized within 
 ###### 5.4.2.2 Mathematical Formulation
 
 Given an input sequence of tokens, each token xi is embedded into a continuous vector space, resulting in:
+
 $$
 \mathbf{X} = [x_1, x_2, \dots, x_n]
 $$
+
 These embeddings are projected into three distinct representations—queries Q, keys K, and values V—using learnable weight matrices:
+
 $$
-\mathbf\quad Q={X}W^Q,\quad K = \mathbf{X}W^K,\quad V = \mathbf{X}W^V
+\quad Q = \mathbf{X}W^Q,\quad K = \mathbf{X}W^K,\quad V = \mathbf{X}W^V
 $$
+
 The attention scores are computed using the scaled dot-product attention:
+
 $$
 \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
 $$
+
 where dk is the dimensionality of the key vectors. The softmax function ensures that the scores are normalized, thereby forming a probability distribution that quantifies the contribution of each token to the context of others.
 
 In a multi-head configuration, suppose there are H heads; each head computes its own attention matrix A^{(h)}. These matrices are then averaged to yield a consolidated attention matrix:
+
 $$
 A = \frac{1}{H} \sum_{h=1}^{H} A^{(h)}
 $$
+
 where 
 $$
 A \in \mathbb{R}^{n \times n}
@@ -253,9 +261,11 @@ Directly explaining the Mistral model is challenging due to its nature as a comp
 **a. Shapley Values in Cooperative Game Theory**
 
 The Shapley value is a concept from cooperative game theory used to determine the contribution of each player (feature) in a game (model prediction). For a model f and a given input x with feature set N, the Shapley value for feature i is defined as:
+
 $$
 \phi_i(f, x) = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!(|N| - |S| - 1)!}{|N|!} \left[ f_x(S \cup \{i\}) - f_x(S) \right]
 $$
+
 Here, S represents a subset of features excluding i, and fx(S) denotes the expected model output conditioned on the feature subset S.
 
 **b. TreeSHAP’s Efficient Computation**
@@ -267,14 +277,19 @@ For tree models, the straightforward computation of Shapley values is computatio
 
 - **Dynamic Programming:**
    The algorithm accumulates contributions along the decision paths without enumerating all possible subsets. For a single tree, the model output is represented as:
+  
   $$
   f(x) = \phi_0 + \sum_{i=1}^{M} \phi_i
   $$
+
   where ϕ0 is the baseline and ϕi are the individual feature contributions. For an ensemble of trees (e.g., XGBoost):
+  
   $$
   f(x) = \sum_{t=1}^{T} \left( \phi_{0,t} + \sum_{i=1}^{M} \phi_{i,t} \right)
   $$
+
   The final Shapley value for feature i is obtained by summing its contributions across all trees:
+  
   $$
   \phi_i = \sum_{t=1}^{T} \phi_{i,t}
   $$
@@ -315,16 +330,20 @@ To avoid erroneous splitting of numerical values (e.g., “12.5%”), a regular 
 
 - **Cosine Similarity:**
   The pairwise cosine similarity between sentence vectors vi and vj is computed using the formula:
+  
   $$
   \text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j) = \frac{\mathbf{v}_i \cdot \mathbf{v}_j}{\|\mathbf{v}_i\| \, \|\mathbf{v}_j\|}
   $$
+
   To ensure non-negative values, any negative similarity scores are clamped to zero.
 
 - **Centrality Score:**
    The semantic centrality Ci of each sentence i is defined as the average cosine similarity of that sentence with all other sentences:
+  
   $$
   C_i = \frac{1}{N} \sum_{j=1}^{N} \max(0, \text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j))
   $$
+
   where N is the total number of sentences. A higher centrality score indicates that the sentence is more representative of the overall semantic content of the document.
 
 **6.4.2.4 Domain-Specific Keyword Weighting**
@@ -340,9 +359,11 @@ To avoid erroneous splitting of numerical values (e.g., “12.5%”), a regular 
 
 - **Score Integration:**
    The final importance score Si for each sentence is derived by combining the semantic centrality and the normalized keyword weight. Specifically, the score is computed as:
+  
   $$
   S_i = \alpha \, C_i + (1 - \alpha) \, W_i
   $$
+  
   where Ci is the normalized semantic centrality score; Wi is the normalized keyword weight; alpha is set to 0.6, placing greater emphasis on the semantic centrality.
 
 - **Sentence Ranking:**
