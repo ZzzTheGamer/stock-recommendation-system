@@ -94,7 +94,7 @@ E(\alpha) = E_{\text{baseline}} + \alpha \times \Delta E, \quad \text{for } \alp
 $$
 
 ​        The path is discretized into N steps (e.g., 25 steps), where each step corresponds to a value
- 
+
 $$
 \alpha_k = \frac{k}{N}
 $$
@@ -337,7 +337,7 @@ To avoid erroneous splitting of numerical values (e.g., “12.5%”), a regular 
   The pairwise cosine similarity between sentence vectors vi and vj is computed using the formula:
   
 $$
-\text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j) = \frac{\mathbf{v}_i \cdot \mathbf{v}_j}{\|\mathbf{v}_i\| \, \|\mathbf{v}_j\|}
+\mathrm{cosineSim}(\mathbf{v}_i, \mathbf{v}_j) = \frac{\mathbf{v}_i \cdot \mathbf{v}_j}{\|\mathbf{v}_i\| \cdot \|\mathbf{v}_j\|}
 $$
 
   To ensure non-negative values, any negative similarity scores are clamped to zero.
@@ -346,7 +346,7 @@ $$
    The semantic centrality Ci of each sentence i is defined as the average cosine similarity of that sentence with all other sentences:
   
 $$
-C_i = \frac{1}{N} \sum_{j=1}^{N} \max(0, \text{cosine\_sim}(\mathbf{v}_i, \mathbf{v}_j))
+C_i = \frac{1}{N} \sum_{j=1}^{N} \max\left(0, \mathrm{cosineSim}(\mathbf{v}_i, \mathbf{v}_j)\right)
 $$
 
   where N is the total number of sentences. A higher centrality score indicates that the sentence is more representative of the overall semantic content of the document.
