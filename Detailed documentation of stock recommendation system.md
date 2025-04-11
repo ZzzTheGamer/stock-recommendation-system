@@ -158,10 +158,12 @@ $$
 A = \frac{1}{H} \sum_{h=1}^{H} A^{(h)}
 $$
 
-where 
+where
+ 
 $$
 A \in \mathbb{R}^{n \times n}
 $$
+
 and each element A{ij} represents the attention weight from token i to token j.
 
 ###### 5.4.2.3 Implementation Details
