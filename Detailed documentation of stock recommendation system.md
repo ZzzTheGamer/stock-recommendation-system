@@ -360,10 +360,10 @@ To avoid erroneous splitting of numerical values (e.g., “12.5%”), a regular 
 - **Score Integration:**
    The final importance score Si for each sentence is derived by combining the semantic centrality and the normalized keyword weight. Specifically, the score is computed as:
   
-  $$
-  S_i = \alpha \, C_i + (1 - \alpha) \, W_i
-  $$
-  
+$$
+S_i = \alpha \, C_i + (1 - \alpha) \, W_i
+$$
+
   where Ci is the normalized semantic centrality score; Wi is the normalized keyword weight; alpha is set to 0.6, placing greater emphasis on the semantic centrality.
 
 - **Sentence Ranking:**
