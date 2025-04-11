@@ -65,13 +65,13 @@ The key idea behind Integrated Gradients is to measure the sensitivity of the mo
 Let f denote the output function of the FinBERT model, and let x be the input embedding vector for a specific token. We choose a baseline embedding x′ (a zero vector) that represents the absence of information. The Integrated Gradient for the i-th component of the input is defined as:
 
 $$
-\mathrm{IG}_i(x) = (x_i - x'_i) \times \int_{0}^{1} \frac{\partial f\big(x' + \alpha (x - x')\big)}{\partial x_i} \, d\alpha
+\{IG}_i(x) = (x_i - x'_i) \times \int_{0}^{1} \frac{\partial f\big(x' + \alpha (x - x')\big)}{\partial x_i} \, d\alpha
 $$
 
 In practice, this integral is approximated using a Riemann sum over N discrete steps:
 
 $$
-\mathrm{IG}_i(x) \approx (x_i - x'_i) \times \frac{1}{N} \sum_{k=1}^{N} \frac{\partial f\left(x' + \frac{k}{N} (x - x')\right)}{\partial x_i}
+\{IG}_i(x) \approx (x_i - x'_i) \times \frac{1}{N} \sum_{k=1}^{N} \frac{\partial f\left(x' + \frac{k}{N} (x - x')\right)}{\partial x_i}
 $$
 
 This formulation captures the cumulative effect of the token’s contribution as its embedding transitions from the baseline x′ to the actual embedding x.
