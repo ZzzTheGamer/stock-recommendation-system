@@ -1,22 +1,22 @@
 @echo off
 chcp 65001
-echo ===== 启动后端服务 (CPU模式) =====
+echo ===== Start the back-end service (CPU mode) =====
 echo.
 
-:: 显示环境信息
-python -c "import torch; print('PyTorch版本:', torch.__version__); print('CUDA是否可用:', torch.cuda.is_available()); print('可用GPU数量:', torch.cuda.device_count() if torch.cuda.is_available() else 0); print('GPU型号:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')"
+:: Display environment information
+python -c "import torch; print('PyTorch version:', torch.__version__); print('CUDA available:', torch.cuda.is_available()); print('Number of available GPUs:', torch.cuda.device_count() if torch.cuda.is_available() else 0); print('GPU model:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')"
 
-:: 如果CUDA不可用，显示警告
-python -c "import torch; cuda=torch.cuda.is_available(); print('警告: CUDA不可用，将使用CPU模式运行，性能可能较低' if not cuda else '')"
-
-echo.
-echo 注意: 正在使用CPU模式运行，计算速度可能较慢
-echo 如果您想使用GPU加速，请运行 start_gpu.bat
+:: If CUDA is not available, display a warning
+python -c "import torch; cuda=torch.cuda.is_available(); print('Warning: CUDA is not available, the service will run in CPU mode, and the performance may be lower' if not cuda else '')"
 
 echo.
-echo 启动Flask应用...
+echo Note: Running in CPU mode, the calculation speed may be slower
+echo If you want to use GPU acceleration, please run start_gpu.bat
+
+echo.
+echo Start the Flask application...
 python app.py
 
 echo.
-echo 后端服务已停止。
+echo The back-end service has been stopped.
 pause 

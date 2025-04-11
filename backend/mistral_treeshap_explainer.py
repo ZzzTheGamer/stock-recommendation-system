@@ -41,7 +41,7 @@ class MistralTreeSHAPExplainer:
     """
     Mistral model recommendation explainer combining tree model and SHAP explainer
     
-    Use the perturbation method similar to LimeExplainer to generate samples,
+    Use the perturbation method to generate samples,
     then use XGBoost as a proxy model,
     finally apply TreeSHAP analysis to feature contribution
     """
@@ -68,7 +68,7 @@ class MistralTreeSHAPExplainer:
             self.api_failures = 0
             logger.info("Starting TreeSHAP analysis...")
             
-            # 1. Create perturbed samples using the LimeExplainer sample generation method
+            # 1. Create perturbed samples
             samples_data = self._generate_perturbation_samples(financial_data)
             
             if not samples_data["success"]:
@@ -504,10 +504,10 @@ Final Score: [NUMBER BETWEEN -1.0 AND 1.0]"""
             feature_sample_counts = {feature: 0 for feature in feature_names}
             
             # 2. Generate random perturbation samples
-            num_samples = 15  # Reduce the sample size from 100 to 15
+            num_samples = 100  # take 100 as an example
             
             # Target at least 2 samples per feature
-            min_samples_per_feature = 2  # Reduce from 12 to 2 samples/feature
+            min_samples_per_feature = 12  
             
             # Define specific perturbation ranges and strategies for each feature
             feature_perturbation_strategies = {
@@ -1041,7 +1041,7 @@ Final Score: [NUMBER BETWEEN -1.0 AND 1.0]"""
             
             if isinstance(original_shap_values, np.ndarray):
                 if len(original_shap_values.shape) > 1:
-                    original_shap_values = original_shap_values[0]  # 获取第一行（唯一一行）
+                    original_shap_values = original_shap_values[0]
             
             # Generate Chinese feature display names
             feature_display_names = FEATURE_DISPLAY_NAMES

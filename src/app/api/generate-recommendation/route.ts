@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import axios from 'axios';
+import { getVIXData, getMarketTrend } from '@/services/yahooFinanceService';
 
-// 初始化OpenAI客户端
+// Initialize the OpenAI client
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
@@ -10,110 +11,116 @@ const openai = new OpenAI({
 // Alpha Vantage API Key
 const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY || 'demo';
 
-// 获取市场数据（包括VIX指数、市场趋势等）
+// Access to market data (including VIX, market trends, etc.)
 async function fetchMarketData() {
     try {
-        // 通过Alpha Vantage获取VIX数据
-        const vixResponse = await axios.get(
-            `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=VIX&apikey=${ALPHA_VANTAGE_API_KEY}`
-        );
+        // First try to use Yahoo Finance API to get VIX data
+        console.log('Getting VIX data through Yahoo Finance API...');
+        const vixData = await getVIXData();
 
-        // 解析VIX数据
-        const timeSeries = vixResponse.data['Time Series (Daily)'];
-        if (!timeSeries) {
-            throw new Error('无法获取VIX数据');
-        }
-
-        // 获取最近的VIX收盘价
-        const latestDate = Object.keys(timeSeries)[0];
-        const vixValue = parseFloat(timeSeries[latestDate]['4. close']);
-        const isHighVolatility = vixValue > 25; // VIX > 25 通常被视为高波动
-
-        // 尝试获取市场指数（S&P 500）判断市场趋势
-        const spyResponse = await axios.get(
-            `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=SPY&apikey=${ALPHA_VANTAGE_API_KEY}`
-        );
-
-        // 解析S&P 500数据
-        const spyTimeSeries = spyResponse.data['Time Series (Daily)'];
-        let marketTrend = 'Neutral';
-
-        if (spyTimeSeries) {
-            const dates = Object.keys(spyTimeSeries).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-
-            if (dates.length >= 10) {
-                const latest = parseFloat(spyTimeSeries[dates[0]]['4. close']);
-                const tenDaysAgo = parseFloat(spyTimeSeries[dates[9]]['4. close']);
-
-                // 简单判断市场趋势（10天涨跌幅）
-                const changePercent = ((latest - tenDaysAgo) / tenDaysAgo) * 100;
-
-                if (changePercent > 3) {
-                    marketTrend = 'Bullish';  // 10天涨幅超过3%视为牛市
-                } else if (changePercent < -3) {
-                    marketTrend = 'Bearish';  // 10天跌幅超过3%视为熊市
-                }
-            }
-        }
+        // Get market trend data
+        console.log('Getting market trend data...');
+        const trendData = await getMarketTrend(10); // Use 10-day period to determine trend
 
         return {
-            volatility: {
-                vix: vixValue,
-                isHigh: isHighVolatility
-            },
-            marketTrend: marketTrend,
-            date: new Date().toISOString().split('T')[0]
+            volatility: vixData.volatility,
+            marketTrend: trendData.marketTrend,
+            date: vixData.date,
+            source: 'yahoo' // Mark the data source
         };
-    } catch (error) {
-        console.error('获取市场数据失败:', error);
 
-        // 如果Alpha Vantage失败，尝试使用Yahoo Finance API
+    } catch (error) {
+        console.error('Failed to get market data from Yahoo Finance:', error);
+
+        // If Yahoo Finance fails, try using Alpha Vantage as a backup
         try {
-            console.log('尝试使用Yahoo Finance API...');
-            // 这里可以实现Yahoo Finance的备选方案
-            // 但这需要额外的包，简单起见，这里返回一个默认值
+            console.log('Trying to use Alpha Vantage API...');
+
+            // Get VIX data from Alpha Vantage
+            const vixResponse = await axios.get(
+                `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=VIX&apikey=${ALPHA_VANTAGE_API_KEY}`
+            );
+
+            // Parse VIX data
+            const timeSeries = vixResponse.data['Time Series (Daily)'];
+            if (!timeSeries) {
+                throw new Error('Failed to get VIX data');
+            }
+
+            // Get the latest VIX closing price
+            const latestDate = Object.keys(timeSeries)[0];
+            const vixValue = parseFloat(timeSeries[latestDate]['4. close']);
+            const isHighVolatility = vixValue > 25; // VIX > 25 is usually considered high volatility
+
+            // Try to get the market index (S&P 500) to determine market trend
+            const spyResponse = await axios.get(
+                `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=SPY&apikey=${ALPHA_VANTAGE_API_KEY}`
+            );
+
+            // Parse S&P 500 data
+            const spyTimeSeries = spyResponse.data['Time Series (Daily)'];
+            let marketTrend = 'Neutral';
+
+            if (spyTimeSeries) {
+                const dates = Object.keys(spyTimeSeries).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+                if (dates.length >= 10) {
+                    const latest = parseFloat(spyTimeSeries[dates[0]]['4. close']);
+                    const tenDaysAgo = parseFloat(spyTimeSeries[dates[9]]['4. close']);
+
+                    // Simple market trend determination (10-day涨跌幅)
+                    const changePercent = ((latest - tenDaysAgo) / tenDaysAgo) * 100;
+
+                    if (changePercent > 3) {
+                        marketTrend = 'Bullish';
+                    } else if (changePercent < -3) {
+                        marketTrend = 'Bearish';
+                    }
+                }
+            }
+
             return {
                 volatility: {
-                    vix: 15,  // 默认中等波动率
-                    isHigh: false
+                    vix: vixValue,
+                    isHigh: isHighVolatility
                 },
-                marketTrend: 'Neutral',
-                date: new Date().toISOString().split('T')[0],
-                source: 'default' // 标记为默认数据
+                marketTrend: marketTrend,
+                date: latestDate,
+                source: 'alphavantage'
             };
-        } catch (yahooError) {
-            console.error('获取Yahoo Finance数据也失败:', yahooError);
-            // 两种方法都失败，返回默认值
+        } catch (alphaVantageError) {
+            console.error('Alpha Vantage API also failed:', alphaVantageError);
+            // Both methods failed, return default values
             return {
                 volatility: {
-                    vix: 15,
+                    vix: 15,  // Default medium volatility
                     isHigh: false
                 },
                 marketTrend: 'Neutral',
                 date: new Date().toISOString().split('T')[0],
-                source: 'default'
+                source: 'default' // Mark as default data
             };
         }
     }
 }
 
-// 处理请求
+// Process requests
 export async function POST(req: NextRequest) {
     try {
-        // 解析请求数据
+        // Parse request data
         const requestData = await req.json();
         const { stockSymbol, sentimentData, financialData, strategyData } = requestData;
 
-        // 获取市场数据
+        // Get market data
         const marketData = await fetchMarketData();
-        console.log("获取到的市场数据:", marketData);
+        console.log("Market data obtained:", marketData);
 
-        // 构建OpenAI Prompt
+        // Build OpenAI Prompt
         const prompt = buildPrompt(stockSymbol, sentimentData, financialData, strategyData, marketData);
 
         console.log("Sending prompt to OpenAI:", prompt);
 
-        // 调用OpenAI API
+        // Call OpenAI API
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [
@@ -126,37 +133,37 @@ export async function POST(req: NextRequest) {
                     content: prompt
                 }
             ],
-            temperature: 0, // 设为0以确保一致性
+            temperature: 0, // Set to 0 to ensure consistency
         });
 
-        // 解析OpenAI响应
+        // Parse OpenAI response
         const responseContent = completion.choices[0].message.content || '';
         console.log("OpenAI response:", responseContent);
 
-        // 尝试提取投资分数和推荐理由
+        // Try to extract investment score and recommendation reasoning
         let score = 0;
         let reasoning = '';
         let featureImportance = [];
 
         try {
-            // 查找分数（格式：Score: X.XX）
+            // Find the score (format: Score: X.XX)
             const scoreMatch = responseContent.match(/Score:\s*(-?\d+\.?\d*)/i);
             if (scoreMatch && scoreMatch[1]) {
                 score = parseFloat(scoreMatch[1]);
-                // 确保分数在-1到1的范围内
+                // Ensure the score is within the range of -1 to 1
                 score = Math.max(-1, Math.min(1, score));
             }
 
-            // 提取推荐理由 - 只保留"Reasoning:"后面的部分，包括所有段落
+            // Extract recommendation reasoning - only keep the part after "Reasoning:" including all paragraphs
             const reasoningMatch = responseContent.match(/Reasoning:\s*([\s\S]*?)(?=Feature Weights:|$)/i);
             if (reasoningMatch && reasoningMatch[1]) {
                 reasoning = reasoningMatch[1].trim();
             } else {
-                // 如果没有明确的"Reasoning:"部分，使用全部回复作为推理
+                // If there is no clear "Reasoning:" section, use the entire response as reasoning
                 reasoning = responseContent.trim();
             }
 
-            // 提取特征权重
+            // Extract feature weights
             const featureWeightsSection = responseContent.match(/Feature Weights:([\s\S]*?)(?=$)/i);
             if (featureWeightsSection && featureWeightsSection[1]) {
                 const weightsText = featureWeightsSection[1].trim();
@@ -175,12 +182,12 @@ export async function POST(req: NextRequest) {
             reasoning = responseContent;
         }
 
-        // 如果没有成功提取特征权重，使用备选的计算方法
+        // If feature weights are not successfully extracted, use the alternative calculation method
         if (featureImportance.length === 0) {
             featureImportance = generateFeatureImportance(sentimentData, financialData, strategyData, marketData);
         }
 
-        // 构造返回数据
+        // Construct return data
         const result = {
             score,
             reasoning,
@@ -199,7 +206,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// 构建发送给OpenAI的提示词
+// Build the prompt sent to OpenAI
 function buildPrompt(
     stockSymbol: string,
     sentimentData: any,
@@ -255,25 +262,25 @@ Feature Weights:
 `;
 }
 
-// 生成基于规则的特征重要性数据（备选方法，当GPT未能提供有效权重时使用）
+// Generate feature importance data based on rules (alternative method, used when GPT does not provide effective weights)
 function generateFeatureImportance(sentimentData: any, financialData: any, strategyData: any, marketData: any) {
-    // 基础权重
+    // Base weights
     let sentimentWeight = 0.30;
     let financialWeight = 0.35;
     let strategyWeight = 0.35;
 
-    // 根据市场波动率调整策略权重
+    // Adjust strategy weight based on market volatility
     if (marketData.volatility.isHigh) {
-        // 高波动率时增加策略权重
+        // When high volatility, increase strategy weight
         strategyWeight = 0.40;
-        // 相应减少其他权重以保持总和为1
+        // Reduce other weights to keep the total at 1
         sentimentWeight = 0.25;
         financialWeight = 0.35;
     }
 
-    // 根据市场趋势调整权重
+    // Adjust weights based on market trend
     if (marketData.marketTrend === 'Bullish') {
-        // 牛市增加情感分析权重
+        // In bullish markets, increase sentiment analysis weight
         sentimentWeight += 0.05;
         financialWeight -= 0.05;
     } else if (marketData.marketTrend === 'Bearish') {
@@ -282,7 +289,7 @@ function generateFeatureImportance(sentimentData: any, financialData: any, strat
         sentimentWeight -= 0.05;
     }
 
-    // 确保总和为1
+    // Ensure the total is 1
     const total = sentimentWeight + financialWeight + strategyWeight;
     if (total !== 1) {
         const adjustmentFactor = 1 / total;

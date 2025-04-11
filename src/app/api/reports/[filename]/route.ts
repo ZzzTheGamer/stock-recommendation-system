@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// 模拟PDF生成
+// Simulate PDF generation
 export async function GET(
     request: NextRequest,
     { params }: { params: { filename: string } }
@@ -8,8 +8,7 @@ export async function GET(
     try {
         const filename = params.filename;
 
-        // 这里应该是真实的PDF生成逻辑
-        // 现在我们只是返回一个简单的文本作为PDF
+        // Now we just return a simple text as PDF
         const content = `
       Financial Analysis Report
       
@@ -21,7 +20,7 @@ export async function GET(
       Generated: ${new Date().toISOString()}
     `;
 
-        // 创建一个简单的文本响应作为PDF
+        // Create a simple text response as PDF
         return new NextResponse(content, {
             headers: {
                 'Content-Type': 'application/pdf',

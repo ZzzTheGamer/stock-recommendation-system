@@ -19,7 +19,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // 股票数据状态
+    // Stock data state
     const [stockData, setStockData] = useState({
         symbol: 'AAPL',
         name: 'Apple Inc.',
@@ -38,7 +38,7 @@ export default function Home() {
         dividendYield: 0.5,
     });
 
-    // 新闻数据状态
+    // News data state
     const [newsData, setNewsData] = useState([
         {
             id: 1,
@@ -74,14 +74,14 @@ export default function Home() {
         },
     ]);
 
-    // 当URL参数变化时更新symbol
+    // When the URL parameter changes, update the symbol
     useEffect(() => {
         if (symbolParam) {
             setSymbol(symbolParam);
         }
     }, [symbolParam]);
 
-    // 获取股票数据和新闻
+    // Get stock data and news
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
@@ -111,7 +111,7 @@ export default function Home() {
         <div className="space-y-8 relative">
             <h1 className="text-3xl font-bold text-center mb-8">Stock Recommendation System</h1>
 
-            {/* 股票搜索框 */}
+            {/* Stock search box */}
             <StockSearch />
 
             {loading ? (
@@ -120,16 +120,16 @@ export default function Home() {
                 <ErrorState message={error} />
             ) : (
                 <>
-                    {/* 股票基本信息 */}
+                    {/* Stock basic information */}
                     <StockHeader stockData={stockData} />
 
-                    {/* 新闻列表 */}
+                    {/* News list */}
                     <NewsSection news={newsData} />
 
-                    {/* 分析模块 */}
+                    {/* Analysis module */}
                     <AnalysisSection stockSymbol={stockData.symbol} />
 
-                    {/* 最终推荐 */}
+                    {/* Final recommendation */}
                     <FinalRecommendation stockSymbol={stockData.symbol} />
                 </>
             )}

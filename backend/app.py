@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
 load_dotenv()
-logger.info("已从.env文件加载环境变量")
+logger.info("Environment variables have been loaded from the.env file")
 
 # Set request timeout
 REQUEST_TIMEOUT = 300  # 5 minutes timeout

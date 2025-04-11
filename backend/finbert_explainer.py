@@ -51,7 +51,7 @@ ig_explainer = None  # Integrated gradient explainer instance
 class IntegratedGradientsExplainer:
     """
     Implement interpretability analysis based on integrated gradients
-    Compared to SHAP, integrated gradients do not require background data sets and are更适合单文本解释
+    Compared to SHAP, integrated gradients do not require background data sets and are more suitable for single text explanation
     """
     def __init__(self, model, tokenizer, steps=25):
         """

@@ -1,23 +1,23 @@
 import { NextResponse } from 'next/server';
 import axios from 'axios';
 
-// Finnhub API 密钥
+// Finnhub API key
 const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || '';
 
 export async function GET(request: Request) {
     try {
-        // 获取 URL 参数
+        // Get URL parameters
         const { searchParams } = new URL(request.url);
         const symbol = searchParams.get('symbol');
 
         if (!symbol) {
             return NextResponse.json(
-                { error: '缺少必要参数: symbol' },
+                { error: 'Missing required parameter: symbol' },
                 { status: 400 }
             );
         }
 
-        // 计算日期范围（从30天前到今天）
+        // Calculate date range (from 30 days ago to today)
         const today = new Date();
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(today.getDate() - 30);
@@ -25,8 +25,8 @@ export async function GET(request: Request) {
         const toDate = Math.floor(today.getTime() / 1000);
         const fromDate = Math.floor(thirtyDaysAgo.getTime() / 1000);
 
-        // 调用 Finnhub API 获取新闻
-        console.log(`[新闻API] 获取 ${symbol} 的新闻，从 ${new Date(fromDate * 1000).toISOString()} 到 ${new Date(toDate * 1000).toISOString()}`);
+        // Call Finnhub API to get news
+        console.log(`[News API] Getting news for ${symbol} from ${new Date(fromDate * 1000).toISOString()} to ${new Date(toDate * 1000).toISOString()}`);
 
         try {
             const response = await axios.get(`https://finnhub.io/api/v1/company-news`, {
@@ -38,14 +38,14 @@ export async function GET(request: Request) {
                 }
             });
 
-            console.log(`[新闻API] 成功获取 ${response.data.length} 条新闻`);
+            console.log(`[News API] Successfully obtained ${response.data.length} news`);
 
-            // 返回新闻数据
+            // Return news data
             return NextResponse.json(response.data);
         } catch (apiError) {
-            console.error('[新闻API] Finnhub API 调用失败:', apiError);
+            console.error('[News API] Finnhub API call failed:', apiError);
 
-            // 返回模拟数据
+            // Return simulated data
             return NextResponse.json([
                 {
                     category: "company news",
@@ -105,7 +105,7 @@ export async function GET(request: Request) {
             ]);
         }
     } catch (error) {
-        console.error('[新闻API] 错误:', error);
+        console.error('[News API] Error:', error);
         return NextResponse.json(
             { error: String(error) },
             { status: 500 }

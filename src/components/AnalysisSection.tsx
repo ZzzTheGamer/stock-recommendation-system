@@ -562,7 +562,7 @@ const AnalysisSection: React.FC<AnalysisSectionProps> = ({ stockSymbol }) => {
                 content={
                     <>
                         <p>Sentiment analysis uses natural language processing to gauge the emotional tone in news and social media content about a stock.</p>
-                        <p className="mt-2">FinGPT analyzes recent news articles and social media posts to determine if the overall sentiment is positive, negative, or neutral.</p>
+                        <p className="mt-2">FinBert analyzes recent news articles and social media posts to determine if the overall sentiment is positive, negative, or neutral.</p>
                         <p className="mt-2">This can provide early signals of potential price movements, as market sentiment often precedes price changes.</p>
                     </>
                 }
@@ -580,7 +580,6 @@ const AnalysisSection: React.FC<AnalysisSectionProps> = ({ stockSymbol }) => {
                             <li>Revenue and earnings growth trends</li>
                             <li>Profitability metrics (margins, ROE, ROA)</li>
                             <li>Liquidity and solvency ratios</li>
-                            <li>Valuation metrics compared to industry peers</li>
                         </ul>
                         <p className="mt-2">This comprehensive assessment helps determine if a stock is potentially undervalued or overvalued.</p>
                     </>
@@ -593,9 +592,8 @@ const AnalysisSection: React.FC<AnalysisSectionProps> = ({ stockSymbol }) => {
                 title="Trading Strategy Analysis"
                 content={
                     <>
-                        <p>Our trading strategy analysis uses machine learning to evaluate technical indicators and suggest potential trading approaches.</p>
+                        <p>Our trading strategy analysis uses various strategies to evaluate technical indicators and suggest potential trading approaches.</p>
                         <p className="mt-2">The system analyzes patterns in historical price and volume data to identify potential entry and exit points.</p>
-                        <p className="mt-2">The TreeSHAP method shows which factors most influenced the strategy recommendation, providing transparency into the AI's decision-making process.</p>
                     </>
                 }
             />
