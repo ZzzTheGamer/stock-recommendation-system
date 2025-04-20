@@ -15,6 +15,15 @@ The system analyzes stocks through multiple perspectives:
 - **Strategy Analysis**: Tests trading strategies with historical price data
 - **Comprehensive Recommendation**: Combines all analyses to provide an explainable investment suggestion
 
+## Important Usage Notes
+
+To ensure sufficient samples for accurate financial analysis, upgrading to HuggingFace Premium is recommended. The free tier may have limits that affect analysis quality and performance.
+
+Please note that model permissions on HuggingFace can change without notice. Models initially available through API may later have their inference endpoints closed by model authors or HuggingFace, allowing only local downloads. If you encounter model permission changes, you may need to:
+1. Switch to alternative similar models
+2. Deploy models locally if possible
+3. Adapt the code to work with different model architectures
+
 ## Key Features
 
 ### Frontend Features

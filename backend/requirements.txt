@@ -14,4 +14,11 @@ xgboost==2.0.3
 python-dotenv==1.0.0
 requests==2.31.0
 Werkzeug==2.3.7
-typing-extensions==4.8.0 
+typing-extensions==4.8.0
+watchdog>=6.0.0
+uuid
+threading
+pathlib
+json
+time
+traceback 
